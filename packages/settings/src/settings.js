@@ -185,7 +185,7 @@ export default {
      *
      * @static
      * @constant
-     * @memberof PIXI
+     * @memberof PIXI.settings
      * @type {boolean}
      */
     CAN_UPLOAD_SAME_BUFFER: canUploadSameBuffer(),
@@ -195,9 +195,24 @@ export default {
      *
      * @static
      * @constant
-     * @memberof PIXI
+     * @memberof PIXI.settings
      * @type {boolean}
      * @default true
      */
     CREATE_IMAGE_BITMAP: true,
+
+    /**
+     * Since v5 pixi uses degrees.
+     *
+     * This legacy option allows to use radians to store rotation in Transform.
+     * Also affects TilingSprite and Graphics.
+     * Please set it before creation of instances of those classes.
+     *
+     * @static
+     * @constant
+     * @memberof PIXI.settings
+     * @type {boolean}
+     * @default false
+     */
+    USE_RADIANS: false,
 };

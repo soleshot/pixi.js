@@ -21,7 +21,7 @@ describe('PIXI.DisplayObject#getGlobalPosition', function ()
         parent.addChild(container);
 
         parent.position.set(100, 100);
-        parent.rotation = Math.PI;
+        parent.rotation = 180;
         parent.scale.set(2, 2);
         container.position.set(10, -30);
         container.pivot.set(1000, 1000);

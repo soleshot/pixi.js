@@ -1,5 +1,6 @@
 import ObservablePoint from './ObservablePoint';
 import Matrix from './Matrix';
+import { DEG_TO_RAD, RAD_TO_DEG } from './const';
 
 /**
  * Transform that takes care about its versions
@@ -60,14 +61,55 @@ export default class Transform
 
         this._cx = 1; // cos rotation + skewY;
         this._sx = 0; // sin rotation + skewY;
-        this._cy = 0; // cos rotation + Math.PI/2 - skewX;
-        this._sy = 1; // sin rotation + Math.PI/2 - skewX;
+        this._cy = 0; // cos rotation + 180 - skewX;
+        this._sy = 1; // sin rotation + 180 - skewX;
 
         this._localID = 0;
         this._currentLocalID = 0;
 
         this._worldID = 0;
         this._parentID = 0;
+
+        this._useRadians = false;
+
+        /**
+         * Radians to current units multiplicator, depends on useRadians
+         * @member {number}
+         */
+        this.rad2deg = RAD_TO_DEG;
+
+        /**
+         * Current units to radians multiplicator, depends on useRadians
+         * @member {number}
+         */
+        this.deg2rad = DEG_TO_RAD;
+    }
+
+    /**
+     * Store radians in rotation
+     *
+     * @member {boolean}
+     * @default false
+     */
+    get useRadians()
+    {
+        return this._useRadians;
+    }
+
+    set useRadians(value) // eslint-disable-line require-jsdoc
+    {
+        this._useRadians = value;
+
+        if (value)
+        {
+            this.rad2deg = 1;
+            this.deg2rad = 1;
+        }
+        else
+        {
+            this.rad2deg = RAD_TO_DEG;
+            this.deg2rad = DEG_TO_RAD;
+        }
     }
 
     /**
@@ -87,10 +129,12 @@ export default class Transform
      */
     updateSkew()
     {
-        this._cx = Math.cos(this._rotation + this.skew._y);
-        this._sx = Math.sin(this._rotation + this.skew._y);
-        this._cy = -Math.sin(this._rotation - this.skew._x); // cos, added PI/2
-        this._sy = Math.cos(this._rotation - this.skew._x); // sin, added PI/2
+        const deg2rad = this.deg2rad;
+
+        this._cx = Math.cos((this._rotation + this.skew._y) * deg2rad);
+        this._sx = Math.sin((this._rotation + this.skew._y) * deg2rad);
+        this._cy = -Math.sin((this._rotation - this.skew._x) * deg2rad); // cos, added PI/2
+        this._sy = Math.cos((this._rotation - this.skew._x) * deg2rad); // sin, added PI/2
 
         this._localID++;
     }

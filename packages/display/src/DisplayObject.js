@@ -1,6 +1,7 @@
 import EventEmitter from 'eventemitter3';
 import { Rectangle, Transform } from '@pixi/math';
 import Bounds from './Bounds';
+import { settings } from '@pixi/settings';
 // _tempDisplayObjectParent = new DisplayObject();
 
 /**
@@ -27,9 +28,11 @@ export default class DisplayObject extends EventEmitter
          * World transform and local transform of this object.
          * This will become read-only later, please do not assign anything there unless you know what are you doing
          *
-         * @member {PIXI.TransformBase}
+         * @member {PIXI.Transform}
          */
         this.transform = new Transform();
+
+        this.transform.useRadians = settings.USE_RADIANS;
 
         /**
          * The opacity of the object.
