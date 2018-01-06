@@ -189,14 +189,14 @@ describe('PIXI.Stage', function ()
 
             let counter = 0;
 
-            animated1.animate = () => { counter++; };
-            animated2.animate = () =>
+            animated1.onAnimate = () => { counter++; };
+            animated2.onAnimate = () =>
             {
                 counter += 2;
                 stage1.removeChild(animated2);
             };
-            animated3.animate = () => { counter += 4; };
-            animated4.animate = () => { counter += 8; };
+            animated3.onAnimate = () => { counter += 4; };
+            animated4.onAnimate = () => { counter += 8; };
 
             stage1.addChild(animated1, animated2, animated3);
             animated3.addChild(animated4);
