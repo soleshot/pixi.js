@@ -165,7 +165,7 @@ export default class Application
             {
                 delta = this.animationDeltaMax;
             }
-            this.stage.animate(delta);
+            this.stage.onAnimate(delta);
         }
 
         this.renderer.render(this.stage);

@@ -201,7 +201,7 @@ describe('PIXI.Stage', function ()
             stage1.addChild(animated1, animated2, animated3);
             animated3.addChild(animated4);
 
-            stage1.animate(0);
+            stage1.onAnimate(0);
             expect(counter).to.be.equals(11); // it should be 15, but mini-runner doesn't like to skip things
         });
 
@@ -227,7 +227,7 @@ describe('PIXI.Stage', function ()
             stage1.addChild(animated1, animated2, animated3);
             animated3.addChild(animated4);
 
-            stage1.animate(0);
+            stage1.onAnimate(0);
             expect(counter).to.be.equals(15);
             expect(animated2.parentStage).to.be.null;
         });
