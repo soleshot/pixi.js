@@ -652,6 +652,22 @@ export default class DisplayObject extends EventEmitter
     {
         this._filters = value && value.slice();
     }
+
+    /**
+     * Object added to the stage, override it to register custom animations
+     */
+    onAdded()
+    {
+
+    }
+
+    /**
+     * Object removed from the stage, override it to remove animations and free the resources associated with it
+     */
+    onRemoved()
+    {
+
+    }
 }
 
 // performance increase to avoid using call.. (10x faster)

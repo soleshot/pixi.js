@@ -39,12 +39,14 @@ export default class Stage extends Container
     onAdd(obj)
     {
         this.runnerAnimate.add(obj);
+        obj.onAdded(this);
         obj.emit('added', this);
     }
 
     onRemove(obj)
     {
         this.runnerAnimate.remove(obj);
+        obj.onRemoved(this);
         obj.emit('removed', this);
     }
 
