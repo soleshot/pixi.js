@@ -122,4 +122,58 @@ describe('PIXI.Stage', function ()
             expect(triggeredRemoved).to.be.true;
         });
     });
+
+    describe('multistage', function ()
+    {
+        it('should work correctly with nested stages', function ()
+        {
+            const stage1 = new Stage();
+            const container1 = new Container();
+            const stage2 = new Stage();
+            const container2 = new Container();
+
+            stage1.addChild(container1);
+            stage2.addChild(container2);
+
+            container1.addChild(stage2);
+            expect(stage2.parentStage).to.be.equals(stage1);
+            expect(stage1.innerStage.isAttached(stage2)).to.be.true;
+            expect(stage1.innerStage.isAttached(container2)).to.be.false;
+            expect(stage2.innerStage.isAttached(container2)).to.be.true;
+
+            container1.removeChild(stage2);
+            expect(stage2.parentStage).to.be.null;
+            expect(stage2.innerStage.isAttached(container2)).to.be.true;
+        });
+
+        it('should fire events when object changes the parent stage', function ()
+        {
+            const stage1 = new Stage();
+            const container1 = new Container();
+            const stage2 = new Stage();
+            const container2 = new Container();
+
+            let counter = 0;
+            const trigger = () => { counter++; };
+
+            container1.on('added', trigger);
+            container1.on('removed', () =>
+            {
+                expect(container1.parentStage).to.be.null;
+                counter++;
+            });
+
+            stage1.addChild(container1);
+            stage2.addChild(container2);
+            expect(counter).to.be.equals(1);
+
+            container2.addChild(container1);
+            expect(counter).to.be.equals(3);
+            expect(container1.parentStage).to.be.equals(stage2);
+
+            stage1.addChild(container2);
+            expect(counter).to.be.equals(5);
+            expect(container1.parentStage).to.be.equals(stage1);
+        });
+    });
 });
