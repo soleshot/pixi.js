@@ -52,6 +52,8 @@ export default class Stage extends Container
 
     onAnimate(delta)
     {
+        this.emit('animate', delta);
+
         this.innerStage.flushDetached();
 
         this.runnerAnimate.run(delta);

@@ -231,5 +231,22 @@ describe('PIXI.Stage', function ()
             expect(counter).to.be.equals(15);
             expect(animated2.parentStage).to.be.null;
         });
+
+        it('should work with nested stages', function ()
+        {
+            const stage1 = new Stage();
+            const container1 = new Container();
+            const stage2 = new Stage();
+            const animated1 = new Container();
+            let counter = 0;
+
+            animated1.onAnimate = (deltaTime) => { counter += deltaTime; };
+            stage1.addChild(container1);
+            container1.addChild(stage2);
+            stage2.addChild(animated1);
+
+            stage1.onAnimate(30);
+            expect(counter).to.be.equals(30);
+        });
     });
 });
