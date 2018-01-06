@@ -176,4 +176,60 @@ describe('PIXI.Stage', function ()
             expect(container1.parentStage).to.be.equals(stage1);
         });
     });
+
+    describe('animation', function ()
+    {
+        it('should fail if removeChild is used instead of detach inside animation', function ()
+        {
+            const stage1 = new Stage();
+            const animated1 = new Container();
+            const animated2 = new Container();
+            const animated3 = new Container();
+            const animated4 = new DisplayObject();
+
+            let counter = 0;
+
+            animated1.animate = () => { counter++; };
+            animated2.animate = () =>
+            {
+                counter += 2;
+                stage1.removeChild(animated2);
+            };
+            animated3.animate = () => { counter += 4; };
+            animated4.animate = () => { counter += 8; };
+
+            stage1.addChild(animated1, animated2, animated3);
+            animated3.addChild(animated4);
+
+            stage1.animate();
+            expect(counter).to.be.equals(11); // it should be 15, but mini-runner doesn't like to skip things
+        });
+
+        it('should animate everythine properly if only detachChild is used inside animation', function ()
+        {
+            const stage1 = new Stage();
+            const animated1 = new Container();
+            const animated2 = new Container();
+            const animated3 = new Container();
+            const animated4 = new DisplayObject();
+
+            let counter = 0;
+
+            animated1.animate = () => { counter++; };
+            animated2.animate = () =>
+            {
+                counter += 2;
+                stage1.detachChild(animated2);
+            };
+            animated3.animate = () => { counter += 4; };
+            animated4.animate = () => { counter += 8; };
+
+            stage1.addChild(animated1, animated2, animated3);
+            animated3.addChild(animated4);
+
+            stage1.animate();
+            expect(counter).to.be.equals(15);
+            expect(animated2.parentStage).to.be.null;
+        });
+    });
 });

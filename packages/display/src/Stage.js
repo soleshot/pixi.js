@@ -55,5 +55,7 @@ export default class Stage extends Container
         this.innerStage.flushDetached();
 
         this.runnerAnimate.run(delta);
+
+        this.innerStage.flushDetached();
     }
 }
