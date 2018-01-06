@@ -1,6 +1,7 @@
 import EventEmitter from 'eventemitter3';
 import { Rectangle, Transform } from '@pixi/math';
 import Bounds from './Bounds';
+import { uid } from '@pixi/utils';
 // _tempDisplayObjectParent = new DisplayObject();
 
 /**
@@ -19,6 +20,8 @@ export default class DisplayObject extends EventEmitter
     constructor()
     {
         super();
+
+        this.uid = uid();
 
         this.tempDisplayObjectParent = null;
 
@@ -65,6 +68,30 @@ export default class DisplayObject extends EventEmitter
          * @readonly
          */
         this.parent = null;
+
+        /**
+         * Which stage object belongs to
+         *
+         * @member {PIXI.Stage}
+         * @readonly
+         */
+        this.parentStage = null;
+
+        /**
+         * Inner element collection for stage, exists only for Stage
+         *
+         * @member {PIXI.InnerStage}
+         * @readonly
+         */
+        this.innerStage = null;
+
+        /**
+         * Array of children, exists only for Container
+         *
+         * @member {PIXI.DisplayObject[]}
+         * @readonly
+         */
+        this.children = null;
 
         /**
          * The multiplied alpha of the displayObject
