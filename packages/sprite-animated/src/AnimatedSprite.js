@@ -185,11 +185,12 @@ export default class AnimatedSprite extends Sprite
      * @private
      * @param {number} deltaTime - Time since last tick.
      */
-    animate(deltaTime)
+    onAnimate(deltaTime)
     {
         if (this.playing && this._autoUpdate)
         {
             this.update(deltaTime);
+            this.emit('animate', deltaTime);
         }
     }
 

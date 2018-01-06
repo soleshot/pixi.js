@@ -25,7 +25,7 @@ export default class Stage extends Container
          * @member {Runner}
          * @readonly
          */
-        this.runnerAnimate = new Runner('animate', 1);
+        this.runnerAnimate = new Runner('onAnimate', 1);
 
         /**
          * set of attached objects
@@ -50,7 +50,7 @@ export default class Stage extends Container
         obj.emit('removed', this);
     }
 
-    animate(delta)
+    onAnimate(delta)
     {
         this.innerStage.flushDetached();
 
