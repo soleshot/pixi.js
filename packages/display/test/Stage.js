@@ -32,23 +32,27 @@ describe('PIXI.Stage', function ()
 
             stage.innerStage.fastDetach = true;
             stage.detachChild(container);
-            expect(counter).to.be.equals(2);
-
-            expect(stage.innerStage.isDetached(container)).to.be.true;
-            expect(stage.innerStage.isAttached(child)).to.be.true;
-
-            stage.addChild(container);
-            expect(counter).to.be.equals(2);
 
             expect(container.parentStage).to.be.equals(stage);
             expect(child.parentStage).to.be.equals(stage);
-            expect(stage.innerStage.detachedSet[child.uid]).to.be.equals(child);
+            expect(stage.innerStage.isDetached(container)).to.be.true;
+            expect(stage.innerStage.isAttached(child)).to.be.true;
+            expect(counter).to.be.equals(2);
 
+            stage.addChild(container);
+
+            expect(container.parentStage).to.be.equals(stage);
+            expect(child.parentStage).to.be.equals(stage);
+            expect(stage.innerStage.isAttached(container)).to.be.true;
+            expect(stage.innerStage.isAttached(child)).to.be.true;
+            expect(counter).to.be.equals(2);
+
+            stage.detachChild(container);
             stage.innerStage.flushDetached();
-            expect(counter).to.be.equals(4);
             expect(container.parentStage).to.be.null;
             expect(child.parentStage).to.be.null;
             expect(stage.innerStage.countDetached()).to.be.zero;
+            expect(counter).to.be.equals(4);
         });
 
         it('should flush all detached subtrees, fastDetach=false', function ()

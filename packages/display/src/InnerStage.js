@@ -65,7 +65,7 @@ export default class InnerStage
      */
     isDetached(displayObject)
     {
-        return displayObject.stage === this.stage && this.detachedSet[displayObject.uid] === displayObject;
+        return displayObject.parentStage === this.stage && this.detachedSet[displayObject.uid] === displayObject;
     }
 
     /**
@@ -77,7 +77,7 @@ export default class InnerStage
      */
     isAttached(displayObject)
     {
-        return displayObject.stage === this.stage && this.detachedSet[displayObject.uid] === undefined;
+        return displayObject.parentStage === this.stage && this.detachedSet[displayObject.uid] === undefined;
     }
 
     /**
@@ -102,9 +102,9 @@ export default class InnerStage
         const stage = this.stage;
         const dSet = this.detachedSet;
 
-        if (subtree.stage !== stage)
+        if (subtree.parentStage !== stage)
         {
-            throw new Error(`detachSubtree: ${subtree} does not belong to the stage`);
+            throw new Error(`detachSubtree: ${subtree.uid} does not belong to the stage`);
         }
 
         if (this.fastDetach)
@@ -201,9 +201,9 @@ export default class InnerStage
         const dSet = this.detachedSet;
         const q = this.tempQueueStack.pop() || [];
 
-        if (subtree.stage !== stage)
+        if (subtree.parentStage !== stage)
         {
-            throw new Error(`detachSubtree: ${subtree} does not belong to the stage`);
+            throw new Error(`removeSubtree: ${subtree.uid} does not belong to the stage`);
         }
 
         q.length = 0;
@@ -250,13 +250,13 @@ export default class InnerStage
 
             if (x.parentStage === stage)
             {
-                x.parentStage = null;
                 if (this.fastDetach)
                 {
                     this.removeSubtree(x);
                 }
                 else
                 {
+                    x.parentStage = null;
                     stage.onRemove(x);
                     delete q[x];
                 }
