@@ -12,7 +12,8 @@ import Runner from 'mini-runner';
 export default class Stage extends Container
 {
     /**
-     *
+     *expect(container.parentStage).to.be.equals(stage);
+     expect(child.parentStage).to.be.equals(stage);
      */
     constructor()
     {

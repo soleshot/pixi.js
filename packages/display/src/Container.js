@@ -327,7 +327,7 @@ export default class Container extends DisplayObject
             // use it the right way (.length and [i]) so that this function can still be optimised by JS runtimes
             for (let i = 0; i < argumentsLength; i++)
             {
-                this.removeChild(arguments[i]);
+                this.detachChild(arguments[i]);
             }
         }
         else

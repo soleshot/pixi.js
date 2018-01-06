@@ -40,9 +40,12 @@ export default class InnerStage
         this.tempQueueStack = [];
 
         /**
-         * When elements are detached - someone has to do the real work.
+         * Optimization flag
          *
-         * With this flag set, `detach` will be faster, but `flush` will go slower
+         * When elements are detached - someone has to do the real work
+         *
+         * With this flag set, `detach` and `add` will be faster, but `flush` will go slower.
+         * In that case, you can move element inside the stage for O(1)
          *
          * If the flag is set, only roots of detached subtrees appear in `detachedSet`
          *
@@ -54,6 +57,40 @@ export default class InnerStage
     }
 
     /**
+     * shortcut function, checks if displayObject is in stage but was detached
+     * in case of `fastDetach` it will return true only for detached roots
+     *
+     * @param displayObject target
+     * @returns {boolean} true if detached
+     */
+    isDetached(displayObject)
+    {
+        return displayObject.stage === this.stage && this.detachedSet[displayObject.uid] === displayObject;
+    }
+
+    /**
+     * shortcut function, checks if displayObject is in stage and was not detached
+     * in case of `fastDetach` it will return true only for detached roots
+     *
+     * @param displayObject target
+     * @returns {boolean} true if detached
+     */
+    isAttached(displayObject)
+    {
+        return displayObject.stage === this.stage && this.detachedSet[displayObject.uid] === undefined;
+    }
+
+    /**
+     * Debug function
+     *
+     * @returns {Number} number of objects in detached set
+     */
+    countDetached()
+    {
+        return Object.keys(this.detachedSet).length;
+    }
+
+    /**
      * detaches subtree
      *
      * If `fastDetach` flag is set to false, it will add elements to detached state recursively
@@ -62,11 +99,17 @@ export default class InnerStage
      */
     detachSubtree(subtree)
     {
+        const stage = this.stage;
         const dSet = this.detachedSet;
+
+        if (subtree.stage !== stage)
+        {
+            throw new Error(`detachSubtree: ${subtree} does not belong to the stage`);
+        }
 
         if (this.fastDetach)
         {
-            dSet[subtree.uniqId] = subtree;
+            dSet[subtree.uid] = subtree;
 
             return;
         }
@@ -79,11 +122,11 @@ export default class InnerStage
         {
             const x = q[i];
 
-            if (x.parentStage !== this)
+            if (x.parentStage !== stage)
             {
                 continue;
             }
-            dSet[x.uniqId] = x;
+            dSet[x.uid] = x;
             if (x.innerStage || !x.children)
             {
                 continue;
@@ -108,6 +151,7 @@ export default class InnerStage
         const aSet = this.allSet;
         const dSet = this.detachedSet;
         const q = this.tempQueueStack.pop() || [];
+        const fastDetach = this.fastDetach;
 
         q.length = 0;
         q.push(subtree);
@@ -115,19 +159,22 @@ export default class InnerStage
         {
             const x = q[i];
 
-            if (x.parentStage === this)
+            if (x.parentStage === stage)
             {
                 // x was in detached state
-                delete dSet[x.uniqId];
-                continue;
+                delete dSet[x.uid];
+                if (fastDetach)
+                {
+                    continue;
+                }
             }
-            if (x.parentStage)
+            else if (x.parentStage)
             {
                 x.parentStage.innerStage.removeSubtree(x);
             }
             x.parentStage = stage;
+            aSet[x.uid] = x;
             stage.onAdd(x);
-            aSet[x.uniqId] = x;
 
             if (x.innerStage || !x.children)
             {
@@ -154,6 +201,11 @@ export default class InnerStage
         const dSet = this.detachedSet;
         const q = this.tempQueueStack.pop() || [];
 
+        if (subtree.stage !== stage)
+        {
+            throw new Error(`detachSubtree: ${subtree} does not belong to the stage`);
+        }
+
         q.length = 0;
         q.push(subtree);
         for (let i = 0; i < q.length; i++)
@@ -167,8 +219,8 @@ export default class InnerStage
             x.parentStage = null;
             stage.onRemove(x);
 
-            delete aSet[x.uniqId];
-            delete dSet[x.uniqId];
+            delete aSet[x.uid];
+            delete dSet[x.uid];
 
             if (x.children)
             {
@@ -206,7 +258,7 @@ export default class InnerStage
                 else
                 {
                     stage.onRemove(x);
-                    delete this.detachedSet[x];
+                    delete q[x];
                 }
             }
         }
