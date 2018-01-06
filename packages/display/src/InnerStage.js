@@ -22,7 +22,7 @@ export default class InnerStage
          * @type {{}}
          * @private
          */
-        this.attachedSet = {};
+        this.allSet = {};
 
         /**
          * set of detached objects
@@ -32,12 +32,35 @@ export default class InnerStage
         this.detachedSet = {};
 
         this.tempQueueStack = [];
+
+        this.fastDetach = true;
     }
 
+    detachNode(node)
+    {
+        const dSet = this.detachedSet;
+
+        dSet[node.uniqId] = node;
+    }
+
+    /**
+     * detaches subtree
+     *
+     * Default implementation adds all elements in subtree to detached set
+     *
+     * @param subtree
+     */
     detachSubtree(subtree)
     {
-        const aSet = this.attachedSet;
         const dSet = this.detachedSet;
+
+        if (this.fastDetach)
+        {
+            dSet[subtree.uniqId] = subtree;
+
+            return;
+        }
+
         const q = this.tempQueueStack.pop() || [];
 
         q.length = 0;
@@ -51,7 +74,6 @@ export default class InnerStage
                 continue;
             }
             dSet[x.uniqId] = x;
-            delete aSet[x.uniqId];
             if (x.innerStage || !x.children)
             {
                 continue;
@@ -68,7 +90,7 @@ export default class InnerStage
     addSubtree(subtree)
     {
         const stage = this.stage;
-        const aSet = this.attachedSet;
+        const aSet = this.allSet;
         const dSet = this.detachedSet;
         const q = this.tempQueueStack.pop() || [];
 
@@ -78,19 +100,18 @@ export default class InnerStage
         {
             const x = q[i];
 
-            if (x.parentStage !== this)
+            if (x.parentStage === this)
             {
-                if (x.parentStage)
-                {
-                    x.parentStage.innerStage.removeSubtree(x);
-                }
-                x.parentStage = stage;
-                stage.onAdd(x);
-            }
-            else
-            {
+                // x was in detached state
                 delete dSet[x.uniqId];
+                continue;
             }
+            if (x.parentStage)
+            {
+                x.parentStage.innerStage.removeSubtree(x);
+            }
+            x.parentStage = stage;
+            stage.onAdd(x);
             aSet[x.uniqId] = x;
 
             if (x.innerStage || !x.children)
@@ -109,7 +130,7 @@ export default class InnerStage
     removeSubtree(subtree)
     {
         const stage = this.stage;
-        const aSet = this.attachedSet;
+        const aSet = this.allSet;
         const dSet = this.detachedSet;
         const q = this.tempQueueStack.pop() || [];
 
