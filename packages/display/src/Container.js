@@ -30,6 +30,8 @@ export default class Container extends DisplayObject
          * @readonly
          */
         this.children = [];
+
+        this.passParentStageToChildren = true;
     }
 
     /**
@@ -40,6 +42,22 @@ export default class Container extends DisplayObject
     onChildrenChange()
     {
         /* empty */
+    }
+
+    /**
+     * Returns stage that owns children. Depends on `passParentStageToChildren`
+     * and whether the container is actually a stage itself
+     *
+     * @returns {Container}
+     */
+    getStageForChildren()
+    {
+        if (this.innerStage)
+        {
+            return this;
+        }
+
+        return this.passParentStageToChildren ? this.parentStage : null;
     }
 
     /**
@@ -66,7 +84,7 @@ export default class Container extends DisplayObject
         }
         else
         {
-            let newChildStage = this.innerStage ? this : this.parentStage;
+            let newChildStage = this.getStageForChildren();
 
             // if the child has a parent then lets remove it as PixiJS objects can only exist in one place
             if (child.parent)
@@ -105,7 +123,7 @@ export default class Container extends DisplayObject
             throw new Error(`${child}addChildAt: The index ${index} supplied is out of bounds ${this.children.length}`);
         }
 
-        let newChildStage = this.innerStage ? this : this.parentStage;
+        let newChildStage = this.getStageForChildren();
 
         if (child.parent)
         {
@@ -294,7 +312,7 @@ export default class Container extends DisplayObject
         // TODO - lets either do all callbacks or all events.. not both!
         this.onChildrenChange(index);
 
-        const childStage = this.innerStage ? this : this.parentStage;
+        const childStage = this.getStageForChildren();
 
         if (childStage)
         {
@@ -390,7 +408,7 @@ export default class Container extends DisplayObject
 
             this.onChildrenChange(beginIndex);
 
-            const childStage = this.innerStage ? this : this.parentStage;
+            const childStage = this.getStageForChildren();
 
             if (childStage)
             {

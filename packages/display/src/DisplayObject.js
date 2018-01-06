@@ -94,6 +94,16 @@ export default class DisplayObject extends EventEmitter
         this.children = null;
 
         /**
+         * Whether stage that object belongs should track its children
+         *
+         * `true` for container, `false` for DisplayObject and Stage
+         *
+         * @member {boolean}
+         * @readonly
+         */
+        this.passParentStageToChildren = false;
+
+        /**
          * The multiplied alpha of the displayObject
          *
          * @member {number}

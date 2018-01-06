@@ -32,6 +32,8 @@ export default class Stage extends Container
          * @type {PIXI.InnerStage}
          */
         this.innerStage = new InnerStage(this);
+
+        this.passParentStageToChildren = false;
     }
 
     onAdd(obj)

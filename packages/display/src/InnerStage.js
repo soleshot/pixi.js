@@ -127,7 +127,7 @@ export default class InnerStage
                 continue;
             }
             dSet[x.uid] = x;
-            if (x.innerStage || !x.children)
+            if (x.innerStage || !x.passParentStageToChildren)
             {
                 continue;
             }
@@ -176,7 +176,7 @@ export default class InnerStage
             aSet[x.uid] = x;
             stage.onAdd(x);
 
-            if (x.innerStage || !x.children)
+            if (!x.passParentStageToChildren)
             {
                 continue;
             }
@@ -222,7 +222,7 @@ export default class InnerStage
             delete aSet[x.uid];
             delete dSet[x.uid];
 
-            if (x.children)
+            if (x.passParentStageToChildren)
             {
                 for (let j = 0; j < x.children.length; j++)
                 {
