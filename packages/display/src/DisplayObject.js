@@ -658,7 +658,7 @@ export default class DisplayObject extends EventEmitter
      */
     onAdded()
     {
-
+        /* empty */
     }
 
     /**
@@ -666,7 +666,7 @@ export default class DisplayObject extends EventEmitter
      */
     onRemoved()
     {
-
+        /* empty */
     }
 }
 
