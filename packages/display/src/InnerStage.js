@@ -18,35 +18,45 @@ export default class InnerStage
         this.stage = stage;
 
         /**
-         * set of attached objects
-         * @type {{}}
-         * @private
+         * set of all objects
+         * @member {{}}
+         * @readonly
          */
         this.allSet = {};
 
         /**
          * set of detached objects
-         * @type {{}}
-         * @private
+         * @member {{}}
+         * @readonly
          */
         this.detachedSet = {};
 
+        /**
+         * Temporary stack for BFS
+         *
+         * @type {Array}
+         * @private
+         */
         this.tempQueueStack = [];
 
+        /**
+         * When elements are detached - someone has to do the real work.
+         *
+         * With this flag set, `detach` will be faster, but `flush` will go slower
+         *
+         * If the flag is set, only roots of detached subtrees appear in `detachedSet`
+         *
+         * Please set it before you do any detach operations
+         *
+         * @member {boolean}
+         */
         this.fastDetach = true;
-    }
-
-    detachNode(node)
-    {
-        const dSet = this.detachedSet;
-
-        dSet[node.uniqId] = node;
     }
 
     /**
      * detaches subtree
      *
-     * Default implementation adds all elements in subtree to detached set
+     * If `fastDetach` flag is set to false, it will add elements to detached state recursively
      *
      * @param subtree
      */
@@ -87,6 +97,11 @@ export default class InnerStage
         this.tempQueueStack.push(q);
     }
 
+    /**
+     * Adds subtree, recursively fires events and sets stage
+     *
+     * @param subtree
+     */
     addSubtree(subtree)
     {
         const stage = this.stage;
@@ -127,6 +142,11 @@ export default class InnerStage
         this.tempQueueStack.push(q);
     }
 
+    /**
+     * Removes subtree, recursively fires events and sets stage to null
+     *
+     * @param subtree
+     */
     removeSubtree(subtree)
     {
         const stage = this.stage;
@@ -162,30 +182,32 @@ export default class InnerStage
         this.tempQueueStack.push(q);
     }
 
+    /**
+     * Fires events on all detached subtrees
+     *
+     * If `fastDetach` flag is set, flush goes slower, because it goes recursively
+     */
     flushDetached()
     {
         const stage = this.stage;
         const q = this.detachedSet;
-        let key;
-        let flag = false;
 
-        for (key in q)
-        {
-            flag = true;
-            break;
-        }
-        if (!flag) return;
-
-        this.detachedSet = {};
-
-        for (key in q)
+        for (const key in q)
         {
             const x = q[key];
 
             if (x.parentStage === stage)
             {
                 x.parentStage = null;
-                stage.onRemove(x);
+                if (this.fastDetach)
+                {
+                    this.removeSubtree(x);
+                }
+                else
+                {
+                    stage.onRemove(x);
+                    delete this.detachedSet[x];
+                }
             }
         }
     }
