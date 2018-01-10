@@ -75,12 +75,14 @@ export default class Transform
         /**
          * Radians to current units multiplicator, depends on useRadians
          * @member {number}
+         * @readonly
          */
         this.rad2deg = RAD_TO_DEG;
 
         /**
          * Current units to radians multiplicator, depends on useRadians
          * @member {number}
+         * @readonly
          */
         this.deg2rad = DEG_TO_RAD;
     }
