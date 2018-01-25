@@ -138,8 +138,9 @@ export default class Sprite extends Container
          * Handy for individual sprite control (i.e. just text).
          *
          * @member {boolean}
+         * @default false
          */
-        this.roundPixels = options.roundPixels;
+        this.roundPixels = false;
     }
 
     /**
