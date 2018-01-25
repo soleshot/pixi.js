@@ -132,6 +132,14 @@ export default class Sprite extends Container
          * @default 'sprite'
          */
         this.pluginName = 'sprite';
+        
+        /**
+         * If true PixiJS will Math.floor() x/y values when rendering, stopping pixel interpolation.
+         * Handy for individual sprite control (i.e. just text).
+         *
+         * @member {boolean}
+         */
+        this.roundPixels = options.roundPixels;
     }
 
     /**
